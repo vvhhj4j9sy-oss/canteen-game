@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مفتش المقصف الذكي | مبادرة وزارة التربية للتوعية الصحية والمدنية</title>
+    <!-- تحميل خط تجوال العربي لوضوح وجمالية عالية وحديثة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <!-- تحميل مكتبة Tailwind CSS للتصميم المتجاوب -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        ministryBlue: '#0f3d68',
+                        ministryTeal: '#0d9488',
+                        ministryGold: '#f59e0b',
+                        softBg: '#f0f4f8',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #fef3c7 100%);
+            min-height: 100vh;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* حركات وتأثيرات بصرية سلسة */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .pop-in {
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        /* شريط التقدم المخصص */
+        .progress-transition {
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* خلفية الشهادة */
+        .certificate-bg {
+            background-image: radial-gradient(#0f3d68 0.75px, transparent 0.75px), radial-gradient(#0d9488 0.75px, #ffffff 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col justify-between p-3 sm:p-6">
+
+    <!-- الشريط العلوي (الهوية المؤسسية والمقاييس الحية) -->
+    <header class="max-w-3xl w-full mx-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200/80 p-3 sm:p-4 mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-ministryBlue to-ministryTeal flex items-center justify-center text-white shadow-sm shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-ministryTeal tracking-wide block">مبادرة وزارة التربية للتوعية الصحية والمدنية</span>
+                    <h1 class="text-lg sm:text-xl font-black text-ministryBlue leading-tight">مفتش المقصف الذكي</h1>
+                </div>
+            </div>
+
+            <!-- مؤشرات الأداء الحية (تظهر أثناء اللعب) -->
+            <div id="liveMeters" class="hidden flex items-center gap-3 sm:gap-5 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                <div class="text-center">
+                    <div class="flex items-center gap-1 text-xs font-bold text-emerald-700">
+                        <span>❤️</span> <span>صحة الطلاب</span>
+                    </div>
+                    <div class="w-20 sm:w-24 h-2 bg-slate-200 rounded-full mt-1 overflow-hidden">
+                        <div id="healthBar" class="h-full bg-emerald-500 progress-transition" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="flex items-center gap-1 text-xs font-bold text-blue-800">
+                        <span>⚖️</span> <span>سيادة القانون</span>
+                    </div>
+                    <div class="w-20 sm:w-24 h-2 bg-slate-200 rounded-full mt-1 overflow-hidden">
+                        <div id="lawBar" class="h-full bg-blue-600 progress-transition" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <div class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-1 rounded-lg text-sm border border-amber-200">
+                    <span id="scoreDisplay">0</span> نقطة
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- الحاوية الرئيسية للعبة -->
+    <main class="max-w-3xl w-full mx-auto flex-grow flex items-center justify-center">
+
+        <!-- 1. شاشة البداية (Start Screen) -->
+        <section id="startScreen" class="w-full bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 text-center pop-in">
+            <div class="inline-flex items-center gap-2 bg-teal-50 text-teal-800 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full border border-teal-200 mb-5">
+                <span>🎓</span>
+                <span>برنامج التثقيف الصحي والتربية المدنية</span>
+            </div>
+
+            <div class="flex justify-center gap-4 text-4xl sm:text-5xl mb-5 animate-float">
+                <span>🏫</span>
+                <span>⚖️</span>
+                <span>🥗</span>
+            </div>
+
+            <h2 class="text-2xl sm:text-4xl font-black text-ministryBlue mb-3 leading-snug">
+                هل أنت مستعد لحماية صحة الطلاب وتطبيق القانون؟
+            </h2>
+            <p class="text-slate-600 text-base sm:text-lg max-w-xl mx-auto mb-6 leading-relaxed">
+                بصفتك <strong>"مفتشاً معتمداً"</strong> من وزارة التربية والتعليم، مهمتك هي فحص المقاصف المدرسية والتأكد من التزامها بـ <strong>قانون الرقابة على المقاصف المدرسية (2014)</strong> والمنشور الدوري للمدير العام لحماية <strong>الحق في الصحة والسلامة الجسدية</strong>.
+            </p>
+
+            <!-- بطاقات مراحل اللعبة -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right max-w-xl mx-auto mb-7">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 flex items-start gap-3">
+                    <span class="text-2xl bg-white p-2 rounded-xl shadow-sm">🔍</span>
+                    <div>
+                        <h3 class="font-extrabold text-ministryBlue text-sm sm:text-base">المرحلة 1: جولة تفتيش المقصف</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">افحص 8 أصناف غذائية وميّز بين المسموح صحياً والمخالف للقانون.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 flex items-start gap-3">
+                    <span class="text-2xl bg-white p-2 rounded-xl shadow-sm">🏛️</span>
+                    <div>
+                        <h3 class="font-extrabold text-ministryBlue text-sm sm:text-base">المرحلة 2: مواقف وقرارات مدنية</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">واجه تحديات واقعية ووازن بين حرية التجارة وصحة الطلاب وسيادة القانون.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إدخال اسم الطالب للشهادة (اختياري) -->
+            <div class="max-w-sm mx-auto mb-6">
+                <label for="playerNameInput" class="block text-xs font-bold text-slate-500 mb-1.5">أدخل اسمك لإصدار شهادة المفتش في النهاية (اختياري):</label>
+                <input type="text" id="playerNameInput" placeholder="مثال: أحمد / سارة..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-center font-bold text-slate-700 focus:outline-none focus:border-ministryTeal focus:ring-2 focus:ring-teal-200 transition">
+            </div>
+
+            <button onclick="startGame()" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-l from-ministryBlue to-ministryTeal hover:opacity-95 active:scale-95 text-white font-black text-lg rounded-2xl shadow-lg shadow-teal-900/20 transition cursor-pointer">
+                🚀 ابدأ مهمة التفتيش الآن
+            </button>
+        </section>
+
+        <!-- 2. شاشة المرحلة الأولى: تفتيش المنتجات (Stage 1) -->
+        <section id="stage1Screen" class="hidden w-full bg-white rounded-3xl shadow-xl border border-slate-100 p-5 sm:p-8 pop-in">
+            <!-- شريط تقدم المرحلة -->
+            <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-slate-500 mb-2">
+                <span class="text-ministryTeal bg-teal-50 px-3 py-1 rounded-full">المرحلة 1 من 2: جولة التفتيش الميداني</span>
+                <span id="itemCounter">المنتج 1 من 8</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 rounded-full mb-6 overflow-hidden">
+                <div id="stage1Progress" class="h-full bg-ministryTeal progress-transition" style="width: 12.5%;"></div>
+            </div>
+
+            <!-- بطاقة المنتج -->
+            <div id="productCard" class="bg-gradient-to-b from-slate-50 to-white border-2 border-slate-200/80 rounded-2xl p-6 text-center mb-6 shadow-inner">
+                <div id="productEmoji" class="text-6xl sm:text-7xl mb-3 inline-block animate-float">🥤</div>
+                <h3 id="productName" class="text-xl sm:text-2xl font-black text-ministryBlue mb-2">مشروب طاقة ومشروبات غازية محلاة</h3>
+                <p id="productDesc" class="text-slate-600 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+                    علب مشروبات غازية عالية السكر ومشروبات طاقة معروضة في ثلاجة المقصف الرئيسية للطلاب.
+                </p>
+            </div>
+
+            <!-- أزرار القرار -->
+            <div id="stage1Buttons" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="evaluateProduct(true)" class="flex items-center justify-center gap-3 py-4 px-6 bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-500 text-emerald-800 font-black text-lg rounded-2xl transition active:scale-95 cursor-pointer">
+                    <span class="text-2xl">✅</span>
+                    <span>مسموح بالبيع (مطابق للقانون)</span>
+                </button>
+                <button onclick="evaluateProduct(false)" class="flex items-center justify-center gap-3 py-4 px-6 bg-rose-50 hover:bg-rose-100 border-2 border-rose-500 text-rose-800 font-black text-lg rounded-2xl transition active:scale-95 cursor-pointer">
+                    <span class="text-2xl">🚫</span>
+                    <span>مخالف للقانون (ممنوع البيع)</span>
+                </button>
+            </div>
+
+            <!-- صندوق التغذية الراجعة الفورية -->
+            <div id="stage1Feedback" class="hidden mt-5 p-5 rounded-2xl border-2 pop-in">
+                <div class="flex items-start gap-3">
+                    <span id="feedbackIcon" class="text-3xl shrink-0">💡</span>
+                    <div>
+                        <h4 id="feedbackTitle" class="font-black text-lg mb-1">قرار صائب!</h4>
+                        <p id="feedbackText" class="text-sm sm:text-base leading-relaxed"></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-left">
+                    <button onclick="nextProduct()" class="px-6 py-2.5 bg-ministryBlue text-white font-bold rounded-xl hover:bg-slate-800 transition cursor-pointer">
+                        المنتج التالي ⬅️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. شاشة الانتقال بين المرحلتين -->
+        <section id="transitionScreen" class="hidden w-full bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 text-center pop-in">
+            <div class="text-5xl mb-4">🏛️⚖️</div>
+            <span class="text-xs font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full">اكتملت الجولة الميدانية بنجاح!</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-ministryBlue mt-3 mb-3">
+                المرحلة الثانية: مواقف وقرارات مدنية
+            </h2>
+            <p class="text-slate-600 text-base sm:text-lg max-w-xl mx-auto mb-6 leading-relaxed">
+                الرقابة ليست مجرد فحص طعام، بل هي <strong>تطبيق للقانون وتحقيق للتوازن الديمقراطي</strong>. ستواجه الآن <strong>4 مواقف واقعية</strong> تتطلب منك اتخاذ القرار الصحيح وفق مبادئ التربية المدنية وسلطة القانون.
+            </p>
+            <button onclick="startStage2()" class="px-8 py-4 bg-ministryBlue hover:bg-slate-800 text-white font-black text-lg rounded-2xl shadow-lg transition cursor-pointer">
+                انتقل إلى المواقف المدنية ⬅️
+            </button>
+        </section>
+
+        <!-- 4. شاشة المرحلة الثانية: المواقف المدنية (Stage 2) -->
+        <section id="stage2Screen" class="hidden w-full bg-white rounded-3xl shadow-xl border border-slate-100 p-5 sm:p-8 pop-in">
+            <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-slate-500 mb-2">
+                <span class="text-blue-800 bg-blue-50 px-3 py-1 rounded-full">المرحلة 2 من 2: تحليل المواقف المدنية</span>
+                <span id="scenarioCounter">الموقف 1 من 4</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 rounded-full mb-6 overflow-hidden">
+                <div id="stage2Progress" class="h-full bg-blue-600 progress-transition" style="width: 25%;"></div>
+            </div>
+
+            <!-- نص الموقف -->
+            <div class="bg-blue-50/70 border border-blue-200 rounded-2xl p-5 sm:p-6 mb-6">
+                <div class="flex items-center gap-2 text-ministryBlue font-extrabold text-sm mb-2">
+                    <span>📋</span>
+                    <span id="scenarioTag">توازن الحقوق: حرية العمل مقابل الحق في الصحة</span>
+                </div>
+                <h3 id="scenarioTitle" class="text-lg sm:text-xl font-black text-slate-900 mb-2">احتجاج متعهد المقصف</h3>
+                <p id="scenarioDesc" class="text-slate-700 text-sm sm:text-base leading-relaxed">
+                    يعترض صاحب المقصف على منع بيع النقانق والبطاطا المقلية قائلاً: "هذا مشروعي التجاري، ومن حقي كسب الرزق بحرية والطلاب يطلبون هذه الوجبات!". بصفتك مفتشاً، كيف ترد عليه؟
+                </p>
+            </div>
+
+            <!-- خيارات الموقف -->
+            <div id="scenarioOptions" class="space-y-3">
+                <!-- يتم توليد الخيارات برمجياً -->
+            </div>
+
+            <!-- التغذية الراجعة للموقف -->
+            <div id="stage2Feedback" class="hidden mt-5 p-5 rounded-2xl border-2 pop-in">
+                <div class="flex items-start gap-3">
+                    <span id="s2FeedbackIcon" class="text-3xl shrink-0">⚖️</span>
+                    <div>
+                        <h4 id="s2FeedbackTitle" class="font-black text-lg mb-1">تحليل مدني دقيق!</h4>
+                        <p id="s2FeedbackText" class="text-sm sm:text-base leading-relaxed"></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-left">
+                    <button onclick="nextScenario()" class="px-6 py-2.5 bg-ministryBlue text-white font-bold rounded-xl hover:bg-slate-800 transition cursor-pointer">
+                        متابعة ⬅️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. شاشة النتائج والشهادة النهائية (Results & Certificate) -->
+        <section id="resultScreen" class="hidden w-full bg-white rounded-3xl shadow-2xl border border-slate-200 p-5 sm:p-8 text-center pop-in">
+            <!-- إطار الشهادة -->
+            <div class="certificate-bg border-4 border-double border-ministryBlue rounded-2xl p-6 sm:p-8 mb-6 relative overflow-hidden">
+                <div class="inline-block bg-ministryBlue text-white text-xs font-bold px-4 py-1 rounded-full mb-3">
+                    وزارة التربية والتعليم • قسم التثقيف الصحي والمدني
+                </div>
+                <div id="finalBadgeEmoji" class="text-5xl sm:text-6xl mb-2">🏆</div>
+                <h2 class="text-2xl sm:text-3xl font-black text-ministryBlue mb-1">شهادة اعتماد مفتش مقصف</h2>
+                <p id="certificatePlayerName" class="text-lg font-extrabold text-ministryTeal mb-3">تُمنح إلى: مفتش التوعية الصحية والمدنية</p>
+
+                <div class="bg-white/90 backdrop-blur rounded-xl p-4 max-w-md mx-auto border border-slate-200 mb-4">
+                    <div class="text-xs font-bold text-slate-500">الرتبة المستحقة</div>
+                    <div id="finalRank" class="text-xl sm:text-2xl font-black text-amber-600 mt-0.5">سفير الصحة وسيادة القانون</div>
+                </div>
+
+                <!-- ملخص الإحصائيات -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-lg mx-auto text-center">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <div class="text-xs text-slate-500 font-bold">النتيجة النهائية</div>
+                        <div id="finalScore" class="text-lg sm:text-xl font-black text-ministryBlue">100%</div>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                        <div class="text-xs text-emerald-700 font-bold">مؤشر الصحة</div>
+                        <div id="finalHealth" class="text-lg sm:text-xl font-black text-emerald-700">100%</div>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-200">
+                        <div class="text-xs text-blue-700 font-bold">سيادة القانون</div>
+                        <div id="finalLaw" class="text-lg sm:text-xl font-black text-blue-700">100%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- خلاصة التوعية للطلاب -->
+            <div class="bg-teal-50/80 border border-teal-200 rounded-2xl p-4 sm:p-5 text-right mb-6">
+                <h3 class="font-black text-ministryBlue text-base sm:text-lg mb-2 flex items-center gap-2">
+                    <span>📌</span>
+                    <span>رسالتك كطالب ومواطن واعٍ:</span>
+                </h3>
+                <ul class="text-xs sm:text-sm text-slate-700 space-y-1.5 list-disc list-inside leading-relaxed">
+                    <li><strong>الحق في الصحة:</strong> الغذاء الصحي في المدرسة ليس رفاهية، بل هو حق أساسي يكفله القانون لكل طالب.</li>
+                    <li><strong>القانون فوق الجميع:</strong> منشور المدير العام وقانون الرقابة على المقاصف (2014) ملزمان لجميع المدارس ومتعهدي المقاصف.</li>
+                    <li><strong>المشاركة المدنية:</strong> في حال وجود مخالفات في مقصف مدرستك، يحق لمجلس الطلاب والأهل التوجه لإدارة المدرسة أو خط التوجهات في وزارة التربية.</li>
+                </ul>
+            </div>
+
+            <button onclick="resetGame()" class="px-8 py-3.5 bg-ministryTeal hover:bg-teal-700 text-white font-black text-base rounded-2xl shadow-md transition cursor-pointer">
+                🔄 إعادة جولة التفتيش
+            </button>
+        </section>
+
+    </main>
+
+    <!-- التذييل -->
+    <footer class="max-w-3xl w-full mx-auto text-center text-xs text-slate-500 mt-5 pb-2">
+        أداة تعليمية تفاعلية للتوعية بقانون الرقابة على المقاصف المدرسية ومنشور المدير العام لوزارة التربية
+    </footer>
+
+    <!-- منطق اللعبة التفاعلي -->
+    <script>
+        // بيانات المرحلة الأولى: 8 منتجات غذائية واقعية من مقاصف المدارس
+        const products = [
+            {
+                emoji: "🥤",
+                name: "مشروبات غازية محلاة ومشروبات طاقة",
+                desc: "علب كولا ومشروبات طاقة غنية بالكافيين والسكريات المصنّعة معروضة للبيع للطلاب.",
+                allowed: false,
+                explanation: "يمنع قانون الرقابة على المقاصف ومنشور المدير العام بيع المشروبات الغازية والمحلاة ومشروبات الطاقة بشكل قاطع لما تسببه من سمنة وأضرار صحية للطلاب."
+            },
+            {
+                emoji: "🥪",
+                name: "ساندويش خبز قمح كامل مع لبنة وخضار طازجة",
+                desc: "شطيرة محضّرة يومياً من خبز الحبوب الكاملة مع اللبنة وزيت الزيتون وشرائح الخيار والطماطم.",
+                allowed: true,
+                explanation: "ممتاز! يشجع منشور المدير العام على توفير شطائر من القمح الكامل مع البروتينات والألبان قليلة الدسم والخضار الطازجة."
+            },
+            {
+                emoji: "🌭",
+                name: "نقانق مصنّعة وبطاطا مقلية بالزيت العميق",
+                desc: "وجبات سريعة مقلية بالزيت العميق ولحوم مصنّعة عالية الصوديوم والدهون المشبعة.",
+                allowed: false,
+                explanation: "مخالف للقانون! يُحظر بيع اللحوم المصنّعة (كالنقانق) والأطعمة المقلية بالزيت العميق في المدارس لخطورتها على صحة القلب والشرايين."
+            },
+            {
+                emoji: "💧",
+                name: "قناني مياه معدنية وحليب قليل الدسم غير محلى",
+                desc: "مياه شرب نقية وحليب طبيعي بدون إضافة سكر متوفرة بسعر معقول في المقصف.",
+                allowed: true,
+                explanation: "صحيح 100%! يُلزم القانون المقاصف بتوفير المياه المعدنية والحليب غير المحلى كخيارات أساسية وصحية للطلاب."
+            },
+            {
+                emoji: "🍟",
+                name: "أكياس شيبس ومسليات مالحة وحلويات مصنعة",
+                desc: "مسليات مقرمشة عالية الملح والدهون المهدرجة مع سكاكر ملونة اصطناعياً.",
+                allowed: false,
+                explanation: "ممنوع! ينص منشور المدير العام على منع بيع المسليات المالحة (الشيبس) والحلويات والسكاكر الغنية بالدهون المشبعة والأصباغ."
+            },
+            {
+                emoji: "🍎",
+                name: "فواكه موسمية طازجة وسلطة خضار",
+                desc: "تفاح وموز وبرتقال مغسول وجاهز للأكل، إلى جانب علب سلطة خضار طازجة.",
+                allowed: true,
+                explanation: "رائع! الفواكه والخضار الطازجة هي الركيزة الأساسية للتغذية السليمة التي يفرضها قانون التغذية في المؤسسات التعليمية."
+            },
+            {
+                emoji: "🥐",
+                name: "معجنات بوريكس بالسمن النباتي (المارغرين)",
+                desc: "معجنات جاهزة مخبوزة بدهون متحولة (مارغرين) ونسبة عالية جداً من الملح والدهون.",
+                allowed: false,
+                explanation: "مخالف! يمنع القانون بيع المعجنات الغنية بالدهون المتحولة (الترانس) والمارغرين مثل البوريكس التقليدي."
+            },
+            {
+                emoji: "🥜",
+                name: "مكسرات طبيعية غير محمصة وغير مملحة",
+                desc: "أكياس صغيرة من الجوز واللوز الطبيعي النيء بدون ملح أو زيوت مضافة (للصفوف المسموحة).",
+                allowed: true,
+                explanation: "صحيح! المكسرات الطبيعية غير المملحة مصدر ممتاز للدهون الصحية والطاقة الذهنية للطلاب."
+            }
+        ];
+
+        // بيانات المرحلة الثانية: 4 مواقف وقرارات مدنية
+        const scenarios = [
+            {
+                tag: "توازن الحقوق: حرية العمل مقابل الحق في الصحة",
+                title: "احتجاج متعهد المقصف",
+                desc: "يعترض صاحب المقصف على منع بيع النقانق والبطاطا المقلية قائلاً: «هذا مشروعي التجاري، ومن حقي كسب الرزق بحرية والطلاب يطلبون هذه الوجبات!». بصفتك مفتشاً، ما هو الموقف القانوني الصحيح؟",
+                options: [
+                    {
+                        text: "حرية العمل وحرية التملك ليست مطلقة؛ فهي تتراجع عندما تتعارض مع الحق الأساسي للطلاب في الصحة والسلامة الجسدية.",
+                        correct: true,
+                        feedback: "تحليل مدني ممتاز! في النظام الديمقراطي، عند تصادم الحقوق، تُقيَّد حرية التجارة لحماية صحة القاصرين وسلامتهم."
+                    },
+                    {
+                        text: "السماح له ببيعها يومين في الأسبوع فقط لإرضاء الطرفين وتحقيق التوازن.",
+                        correct: false,
+                        feedback: "غير صحيح؛ لا يجوز المساومة على تطبيق القانون أو تعريض صحة الطلاب للخطر ولو ليوم واحد."
+                    },
+                    {
+                        text: "ترك القرار لتصويت الطلاب؛ فإذا صوتت الأغلبية لصالح البطاطا المقلية يُسمح ببيعها.",
+                        correct: false,
+                        feedback: "خطأ مدني؛ حكم الأغلبية في الديمقراطية مقيد بسيادة القانون وحماية حقوق الإنسان الأساسية كالحق في الصحة."
+                    }
+                ]
+            },
+            {
+                tag: "مبدأ سيادة القانون والسلطة الملزمة",
+                title: "منشور المدير العام مقابل رغبة الإدارة",
+                desc: "تجد خلال التفتيش أن إدارة المدرسة غضّت الطرف عن بيع المشروبات المحلاة بحجة أن أرباح المقصف تُستخدم لتمويل رحلات الطلاب. كيف تتعامل مع هذا التبرير؟",
+                options: [
+                    {
+                        text: "قبول التبرير مؤقتاً لأن الهدف تربوي ويخدم الطلاب في نهاية المطاف.",
+                        correct: false,
+                        feedback: "مرفوض قانونياً؛ الغاية لا تبرر مخالفة القانون، وأرباح المقصف لا يمكن أن تأتي على حساب صحة الطلاب."
+                    },
+                    {
+                        text: "تطبيق مبدأ سيادة القانون: منشور المدير العام وقانون 2014 ملزمان للجميع، ولا تملك أي مدرسة صلاحية تجاوزهما.",
+                        correct: true,
+                        feedback: "أحسنت! مبدأ سيادة القانون يعني خضوع الجميع—بمن فيهم إدارة المدرسة—للقانون دون استثناءات."
+                    },
+                    {
+                        text: "إغلاق المقصف نهائياً دون إشعار مسبق أو توثيق المخالفة.",
+                        correct: false,
+                        feedback: "الإجراءات الإدارية السليمة تتطلب توثيق المخالفة رسمياً وإلزام المتعهد والإدارة بتصحيحها وفق الأصول القانونية."
+                    }
+                ]
+            },
+            {
+                tag: "المواطنة الفاعلة والمشاركة الطلابية",
+                title: "دور الطلاب في الرقابة المجتمعية",
+                desc: "يسألك أعضاء مجلس الطلاب في المدرسة: «نحن نلاحظ أن المقصف يرفع أسعار الفواكه ويخفي المياه خلف المشروبات الغالية، ما دورنا كمواطنين وطلاب؟».",
+                options: [
+                    {
+                        text: "تنظيم حملة توعية، وتوثيق الملاحظات وتقديم شكوى رسمية لإدارة المدرسة ولجنة الأهل وقسم التفتيش في الوزارة.",
+                        correct: true,
+                        feedback: "رائع! هذه هي المواطنة الفاعلة والمساءلة الديمقراطية: استخدام القنوات القانونية للتأثير وحماية الحقوق."
+                    },
+                    {
+                        text: "الامتناع عن فعل أي شيء لأن الرقابة هي مسؤولية مفتشي الوزارة فقط.",
+                        correct: false,
+                        feedback: "الرقابة الرسمية لا تكفي وحدها دون وعي ومشاركة المجتمع المدرسي (الطلاب والأهل)."
+                    },
+                    {
+                        text: "نشر إشاعات على وسائل التواصل الاجتماعي لتشويه سمعة المدرسة.",
+                        correct: false,
+                        feedback: "المشاركة المدنية المسؤولة تعتمد على الحقائق والتوجه للقنوات الرسمية، وليس الإشاعات."
+                    }
+                ]
+            },
+            {
+                tag: "الحق في المساواة وتكافؤ الفرص",
+                title: "توفير بدائل صحية للجميع",
+                desc: "تكتشف أن المقصف يبيع الوجبات الصحية بأسعار مرتفعة جداً لا يستطيع معظم الطلاب شراءها، بينما يبيع المعجنات الرخيصة المخالفة للقانون. ما الخلل المدني هنا؟",
+                options: [
+                    {
+                        text: "لا يوجد خلل، فالسوق يخضع للعرض والطلب ولا علاقة للمدرسة بالأسعار.",
+                        correct: false,
+                        feedback: "المقصف المدرسي يعمل بامتياز داخل مؤسسة عامة، وعقد التشغيل يلزمه بأسعار عادلة ورقابة صحية."
+                    },
+                    {
+                        text: "المساس بالحق في المساواة وتكافؤ الفرص؛ يجب أن يكون الغذاء الصحي متاحاً وبسعر عادل لكل طالب بغض النظر عن وضعه الاقتصادي.",
+                        correct: true,
+                        feedback: "إجابة نموذجية! العدالة الاجتماعية والمساواة تتطلبان إتاحة الغذاء الصحي للجميع دون تمييز اقتصادي."
+                    },
+                    {
+                        text: "منع الطلاب ذوي الدخل المحدود من دخول المقصف لتجنب الإحراج.",
+                        correct: false,
+                        feedback: "هذا يمثل تمييزاً مرفوضاً ينتهك كرامة الإنسان وحقه في المساواة."
+                    }
+                ]
+            }
+        ];
+
+        // متغيرات حالة اللعبة
+        let currentProductIndex = 0;
+        let currentScenarioIndex = 0;
+        let score = 0;
+        let healthScore = 50;
+        let lawScore = 50;
+        let correctAnswersCount = 0;
+        const totalQuestions = products.length + scenarios.length; // 12 سؤالاً إجمالاً
+
+        // تحديث الأشرطة العلوية
+        function updateMeters() {
+            healthScore = Math.max(0, Math.min(100, healthScore));
+            lawScore = Math.max(0, Math.min(100, lawScore));
+            document.getElementById('healthBar').style.width = healthScore + '%';
+            document.getElementById('lawBar').style.width = lawScore + '%';
+            document.getElementById('scoreDisplay').textContent = score;
+        }
+
+        // بدء اللعبة
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('liveMeters').classList.remove('hidden');
+            document.getElementById('stage1Screen').classList.remove('hidden');
+            updateMeters();
+            loadProduct();
+        }
+
+        // تحميل المنتج الحالي في المرحلة 1
+        function loadProduct() {
+            const p = products[currentProductIndex];
+            document.getElementById('itemCounter').textContent = `المنتج ${currentProductIndex + 1} من ${products.length}`;
+            document.getElementById('stage1Progress').style.width = `${((currentProductIndex + 1) / products.length) * 100}%`;
+
+            document.getElementById('productEmoji').textContent = p.emoji;
+            document.getElementById('productName').textContent = p.name;
+            document.getElementById('productDesc').textContent = p.desc;
+
+            document.getElementById('stage1Buttons').classList.remove('hidden');
+            document.getElementById('stage1Feedback').classList.add('hidden');
+        }
+
+        // تقييم إجابة الطالب في المرحلة 1
+        function evaluateProduct(userSaysAllowed) {
+            const p = products[currentProductIndex];
+            const isCorrect = (userSaysAllowed === p.allowed);
+
+            document.getElementById('stage1Buttons').classList.add('hidden');
+            const feedbackBox = document.getElementById('stage1Feedback');
+            feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-400', 'text-emerald-900', 'bg-rose-50', 'border-rose-400', 'text-rose-900');
+
+            if (isCorrect) {
+                score += 10;
+                healthScore += 6;
+                lawScore += 6;
+                correctAnswersCount++;
+                feedbackBox.classList.add('bg-emerald-50', 'border-emerald-400', 'text-emerald-900');
+                document.getElementById('feedbackIcon').textContent = '✅';
+                document.getElementById('feedbackTitle').textContent = 'قرار تفتيش صائب!';
+            } else {
+                healthScore -= 8;
+                lawScore -= 8;
+                feedbackBox.classList.add('bg-rose-50', 'border-rose-400', 'text-rose-900');
+                document.getElementById('feedbackIcon').textContent = '⚠️';
+                document.getElementById('feedbackTitle').textContent = 'انتبه! هذا القرار يخالف التعليمات';
+            }
+
+            document.getElementById('feedbackText').textContent = p.explanation;
+            updateMeters();
+        }
+
+        // الانتقال للمنتج التالي أو شاشة المرحلة الثانية
+        function nextProduct() {
+            currentProductIndex++;
+            if (currentProductIndex < products.length) {
+                loadProduct();
+            } else {
+                document.getElementById('stage1Screen').classList.add('hidden');
+                document.getElementById('transitionScreen').classList.remove('hidden');
+            }
+        }
+
+        // بدء المرحلة الثانية
+        function startStage2() {
+            document.getElementById('transitionScreen').classList.add('hidden');
+            document.getElementById('stage2Screen').classList.remove('hidden');
+            loadScenario();
+        }
+
+        // تحميل الموقف المدني في المرحلة 2
+        function loadScenario() {
+            const s = scenarios[currentScenarioIndex];
+            document.getElementById('scenarioCounter').textContent = `الموقف ${currentScenarioIndex + 1} من ${scenarios.length}`;
+            document.getElementById('stage2Progress').style.width = `${((currentScenarioIndex + 1) / scenarios.length) * 100}%`;
+
+            document.getElementById('scenarioTag').textContent = s.tag;
+            document.getElementById('scenarioTitle').textContent = s.title;
+            document.getElementById('scenarioDesc').textContent = s.desc;
+
+            const optionsContainer = document.getElementById('scenarioOptions');
+            optionsContainer.innerHTML = '';
+            optionsContainer.classList.remove('hidden');
+
+            s.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-right p-4 rounded-2xl border-2 border-slate-200 hover:border-ministryBlue hover:bg-slate-50 font-bold text-slate-800 text-sm sm:text-base transition flex items-start gap-3 cursor-pointer";
+                btn.innerHTML = `<span class="w-7 h-7 rounded-full bg-ministryBlue/10 text-ministryBlue font-black flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span><span>${opt.text}</span>`;
+                btn.onclick = () => evaluateScenario(opt);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('stage2Feedback').classList.add('hidden');
+        }
+
+        // تقييم إجابة الموقف المدني
+        function evaluateScenario(option) {
+            document.getElementById('scenarioOptions').classList.add('hidden');
+            const feedbackBox = document.getElementById('stage2Feedback');
+            feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-400', 'text-emerald-900', 'bg-amber-50', 'border-amber-400', 'text-amber-900');
+
+            if (option.correct) {
+                score += 15;
+                healthScore += 8;
+                lawScore += 10;
+                correctAnswersCount++;
+                feedbackBox.classList.add('bg-emerald-50', 'border-emerald-400', 'text-emerald-900');
+                document.getElementById('s2FeedbackIcon').textContent = '⚖️';
+                document.getElementById('s2FeedbackTitle').textContent = 'قرار مدني حكيم ومطابق للقانون!';
+            } else {
+                healthScore -= 8;
+                lawScore -= 10;
+                feedbackBox.classList.add('bg-amber-50', 'border-amber-400', 'text-amber-900');
+                document.getElementById('s2FeedbackIcon').textContent = '💡';
+                document.getElementById('s2FeedbackTitle').textContent = 'تأمل في المبدأ المدني لهذا الموقف:';
+            }
+
+            document.getElementById('s2FeedbackText').textContent = option.feedback;
+            updateMeters();
+        }
+
+        // الانتقال للموقف التالي أو النتيجة النهائية
+        function nextScenario() {
+            currentScenarioIndex++;
+            if (currentScenarioIndex < scenarios.length) {
+                loadScenario();
+            } else {
+                showFinalResults();
+            }
+        }
+
+        // عرض الشهادة والنتيجة النهائية
+        function showFinalResults() {
+            document.getElementById('stage2Screen').classList.add('hidden');
+            document.getElementById('liveMeters').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            const playerName = document.getElementById('playerNameInput').value.trim();
+            document.getElementById('certificatePlayerName').textContent = playerName
+                ? `تُمنح إلى: ${playerName}`
+                : "تُمنح إلى: مفتش/ة التوعية الصحية والمدنية";
+
+            const percentage = Math.round((correctAnswersCount / totalQuestions) * 100);
+            document.getElementById('finalScore').textContent = `${percentage}%`;
+            document.getElementById('finalHealth').textContent = `${healthScore}%`;
+            document.getElementById('finalLaw').textContent = `${lawScore}%`;
+
+            let rank = "";
+            let badge = "🏆";
+            if (percentage >= 85) {
+                rank = "🌟 سفير الصحة وسيادة القانون";
+                badge = "🏆";
+            } else if (percentage >= 60) {
+                rank = "🎖️ مفتش مقصف متميز";
+                badge = "🎖️";
+            } else {
+                rank = "📋 مفتش متدرب (حاول مجدداً لرفع الوعي)";
+                badge = "📋";
+            }
+
+            document.getElementById('finalRank').textContent = rank;
+            document.getElementById('finalBadgeEmoji').textContent = badge;
+        }
+
+        // إعادة تشغيل اللعبة
+        function resetGame() {
+            currentProductIndex = 0;
+            currentScenarioIndex = 0;
+            score = 0;
+            healthScore = 50;
+            lawScore = 50;
+            correctAnswersCount = 0;
+
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
